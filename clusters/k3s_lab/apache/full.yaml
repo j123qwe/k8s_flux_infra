@@ -6,7 +6,7 @@ metadata:
   labels:
     app: apache-webserver
 spec:
-  replicas: 100 
+  replicas: 4
   selector:
     matchLabels:
       app: apache-webserver
