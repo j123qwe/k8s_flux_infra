@@ -6,7 +6,7 @@ metadata:
   labels:
     app: apache-webserver
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: apache-webserver
@@ -21,16 +21,6 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 80
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - apache-webserver
-            topologyKey: "kubernetes.io/hostname"
         env:
         - name: MY_POD_NAME
           valueFrom:
@@ -48,6 +38,23 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - chi
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - dal
       nodeSelector:
         nodeType: utility
 ---
