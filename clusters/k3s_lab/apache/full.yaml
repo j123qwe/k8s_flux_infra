@@ -18,7 +18,7 @@ spec:
       containers:
       - name: apache
         image: j123qwe/apache-k8s:latest
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
         env:
@@ -38,25 +38,26 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
+      nodeSelector:
+        nodeType: utility
       affinity:
         nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - dal
+                - chi
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
+          - weight: 1
             preference:
               matchExpressions:
               - key: topology.kubernetes.io/zone
                 operator: In
                 values:
                 - chi
-          - weight: 50
-            preference:
-              matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: In
-                values:
-                - dal
-      nodeSelector:
-        nodeType: utility
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
